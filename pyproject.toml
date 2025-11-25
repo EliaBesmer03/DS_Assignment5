@@ -1,0 +1,10 @@
+[project]
+name = "BCS-DS-Assignment5"
+version = "0.1.0"
+description = "A Raft project"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pysyncobj>=0.3.14",
+    "flask>=3.1.2"
+]

@@ -1,0 +1,43 @@
+services:
+  node1:
+    build:
+      context: ../
+      dockerfile: docker/node1/Dockerfile
+    container_name: node1
+    networks:
+      kvnet:
+        ipv4_address: 172.25.0.2
+    ports:
+      - "8080:8080"
+      - "6000:6000"
+
+  node2:
+    build:
+      context: ../
+      dockerfile: docker/node2/Dockerfile
+    container_name: node2
+    networks:
+      kvnet:
+        ipv4_address: 172.25.0.3
+    ports:
+      - "8081:8081"
+      - "6001:6001"
+
+  node3:
+    build:
+      context: ../
+      dockerfile: docker/node3/Dockerfile
+    container_name: node3
+    networks:
+      kvnet:
+        ipv4_address: 172.25.0.4
+    ports:
+      - "8082:8082"
+      - "6002:6002"
+
+networks:
+  kvnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.25.0.0/16

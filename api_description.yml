@@ -1,0 +1,103 @@
+openapi: "3.0.1"
+info:
+  title: "Key/Value Service"
+  description: "This is the API for each instance of the Key/Value Service"
+  version: "1.0.0"
+
+paths:
+  /keys/{key}:
+    get:
+      description: "Get the value for the key"
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "May include URL-encoded slashes."
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "The value for the requested key"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemArray'
+        "404":
+          description: "The key does not exist"
+        "400":
+          description: "The stored value is not a list of strings"
+        "500":
+          description: "Unexpected server error"
+    post:
+      description: "Submit a command for the key. The Content-Type must be exactly application/json."
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/PutSchema'
+                - $ref: '#/components/schemas/AppendSchema'
+      responses:
+        "204":
+          description: "The request was successful"
+        "400":
+          description: "The request is not valid"
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /admin/status:
+    get:
+      description: "Get the node status"
+      responses:
+        "200":
+          description: "The node status"
+          content:
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/Status'
+        "500":
+          description: "The status cannot be obtained"
+
+components:
+  schemas:
+    Status:
+      type: string
+    Item:
+      type: string
+    ItemArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/Item'
+    PutSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["PUT"]
+        value:
+          $ref: '#/components/schemas/ItemArray'
+      required:
+        - type
+        - value
+    AppendSchema:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: ["APPEND"]
+        value:
+          $ref: '#/components/schemas/Item'
+      required:
+        - type
+        - value
+    Error:
+      type: string
