@@ -130,9 +130,20 @@ Node1’s election timeout expired first, so it became the new leader in term 3,
 > 
 >Thus, a new leader was successfully elected because the cluster still had a majority after the failure of the original leader.
 
-1. Perform a PUT operation for the key "a" on the new leader. Then, restart the previous leader, and indicate the changes in status for the three servers. Indicate the result of a GET operation for the key "a" to the previous leader.
+2. Perform a PUT operation for the key "a" on the new leader. Then, restart the previous leader, and indicate the changes in status for the three servers. Indicate the result of a GET operation for the key "a" to the previous leader.
 
 Ans:
+
+>Upon restarting the previous leader (node2), it detects that the cluster acts under a new leader (node1) with a higher term. Consequently, node2 transitions to the follower state (state: 0) and recognizes node1 as the current leader.
+>The status changes show:
+> - node2 changes from "unreachable" to follower and synchronizes its log.
+> - node1 remains the leader.
+> - node3 remains a follower.
+>
+> Node2 automatically requests the missing log entries from the leader. Once synchronized, all three servers report the same commit_idx, indicating that the PUT operation performed while node2 was down has been successfully replicated to it.
+>
+> The GET operation on the previous leader confirms this consistency, returning the correct value:
+>
 > eliabesmer@eduroamstud-10-255-185-188 kv % curl http://localhost:8081/keys/a
 ["cat","dog"]
 
